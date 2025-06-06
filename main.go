@@ -8,7 +8,7 @@ import (
 func main() {
 
 	db := models.SetupDB()
-	db.AutoMigrate(&models.Task{})
+	db.AutoMigrate(&models.Book{})
 
 	r := routes.SetupRoutes(db)
 	r.Run(":9002")

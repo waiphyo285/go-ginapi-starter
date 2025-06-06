@@ -14,11 +14,11 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 
 	api := r.Group("/api")
 	{
-		api.GET("/book", controllers.FindTasks)
-		api.POST("/book", controllers.CreateTask)
-		api.GET("/book/:id", controllers.FindTask)
-		api.PATCH("/book/:id", controllers.UpdateTask)
-		api.DELETE("/book/:id", controllers.DeleteTask)
+		api.GET("/book", controllers.GetBooks)
+		api.POST("/book", controllers.CreateBook)
+		api.GET("/book/:id", controllers.GetBook)
+		api.PATCH("/book/:id", controllers.UpdateBook)
+		api.DELETE("/book/:id", controllers.DeleteBook)
 	}
 	return r
 }
