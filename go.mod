@@ -1,4 +1,4 @@
-module github.com/waiphyo285/go-ginapi-starter
+module neohub.asia/mod
 
 go 1.21.1
 

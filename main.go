@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/waiphyo285/go-ginapi-starter/app/databases/models"
-	"github.com/waiphyo285/go-ginapi-starter/app/routes"
+	"neohub.asia/mod/databases/models"
+	"neohub.asia/mod/routes"
 )
 
 func main() {
