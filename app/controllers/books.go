@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"neohub.asia/mod/databases/models"
+	"github.com/waiphyo285/go-ginapi-starter/app/databases/models"
 )
 
 type CreateBookInput struct {
