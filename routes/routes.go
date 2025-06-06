@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/waiphyo285/go-ginapi-starter/app/controllers"
+	"neohub.asia/mod/controllers"
 )
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
