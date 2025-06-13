@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"neohub.asia/mod/controllers"
 	"neohub.asia/mod/middlewares"
 )
@@ -12,8 +12,9 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 	})
+	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	// Public route for login
+	// Public route 
 	r.POST("/auth/token", controllers.LoginHandler)
 
 	// Protected routes

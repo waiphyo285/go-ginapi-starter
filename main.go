@@ -7,9 +7,14 @@ import (
 )
 
 func main() {
-	db := set_db.SetupDB()
-	db.AutoMigrate(&models.Book{})
+	db := databases.SetupDB()
+	// Migrate models
+	db.AutoMigrate(&models.Book{}, &models.AuditLog{})
 
+	// Register Hooks
+	databases.RegisterHooks(db)
+
+	// Setup Routes
 	r := routes.SetupRoutes(db)
 	r.Run(":9002")
 }

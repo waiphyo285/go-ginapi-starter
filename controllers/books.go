@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"neohub.asia/mod/databases/models"
 )
 
@@ -50,7 +50,10 @@ func CreateBook(c *gin.Context) {
 
 	book := models.Book{Title: input.Title, Author: input.Author}
 	db := c.MustGet("db").(*gorm.DB)
-	db.Create(&book)
+	if err := db.Create(&book).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create book"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
@@ -71,7 +74,18 @@ func UpdateBook(c *gin.Context) {
 		return
 	}
 
-	db.Model(&book).Updates(models.Book{Title: input.Title, Author: input.Author})
+	updateData := map[string]interface{}{}
+	if input.Title != "" {
+		updateData["title"] = input.Title
+	}
+	if input.Author != "" {
+		updateData["author"] = input.Author
+	}
+
+	if err := db.Model(&book).Updates(updateData).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": book})
 }
@@ -86,6 +100,10 @@ func DeleteBook(c *gin.Context) {
 		return
 	}
 
-	db.Delete(&book)
+	if err := db.Delete(&book).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }
