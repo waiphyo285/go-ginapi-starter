@@ -1,4 +1,4 @@
-package models
+package set_db
 
 import (
 	// go-sql-driver/mysql

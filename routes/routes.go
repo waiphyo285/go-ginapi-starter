@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"neohub.asia/mod/controllers"
+	"neohub.asia/mod/middlewares"
 )
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
@@ -12,7 +13,12 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		c.Set("db", db)
 	})
 
+	// Public route for login
+	r.POST("/auth/token", controllers.LoginHandler)
+
+	// Protected routes
 	api := r.Group("/api")
+	api.Use(middlewares.JWTAuthMiddleware())
 	{
 		api.GET("/book", controllers.GetBooks)
 		api.POST("/book", controllers.CreateBook)
