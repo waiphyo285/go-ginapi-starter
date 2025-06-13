@@ -21,6 +21,8 @@ type TokenResponse struct {
 
 func LoginHandler(c *gin.Context) {
 	var body LoginRequest
+	jwtCfg := config.LoadJWTConfig()
+	
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -33,7 +35,7 @@ func LoginHandler(c *gin.Context) {
 
 	token, err := jwtservice.CreateToken(
 		map[string]interface{}{"sub": body.Username},
-		time.Minute*time.Duration(config.JWT_EXPIRES_MIN),
+		time.Minute*time.Duration(jwtCfg.ExpiresIn),
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})

@@ -1,8 +1,8 @@
 package jwtservice
 
 import (
-	"errors"
 	"time"
+	"errors"
 
 	"github.com/golang-jwt/jwt/v5"
 	"neohub.asia/mod/config"
@@ -10,21 +10,24 @@ import (
 
 func CreateToken(data map[string]interface{}, expiresDelta time.Duration) (string, error) {
 	claims := jwt.MapClaims{}
+	jwtCfg := config.LoadJWTConfig()
+
 	for k, v := range data {
 		claims[k] = v
 	}
 	claims["exp"] = time.Now().Add(expiresDelta).Unix()
 
-	token := jwt.NewWithClaims(jwt.GetSigningMethod(config.JWT_ALGO), claims)
-	return token.SignedString(config.JWT_SECRET)
+	token := jwt.NewWithClaims(jwt.GetSigningMethod(jwtCfg.Algorithm), claims)
+	return token.SignedString(jwtCfg.Secret)
 }
 
 func VerifyToken(tokenStr string) (jwt.MapClaims, error) {
+	jwtCfg := config.LoadJWTConfig()
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return config.JWT_SECRET, nil
+		return jwtCfg.Secret, nil
 	})
 
 	if err != nil {
