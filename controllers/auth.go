@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"neohub.asia/mod/config"
-	"neohub.asia/mod/services/jwt"
+	jwtservice "neohub.asia/mod/services/jwt"
+	"neohub.asia/mod/utils"
 )
 
 type LoginRequest struct {
@@ -21,28 +20,27 @@ type TokenResponse struct {
 
 func LoginHandler(c *gin.Context) {
 	var body LoginRequest
-	jwtCfg := config.LoadJWTConfig()
 	
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		utils.RespondError(c, http.StatusBadRequest, "Invalid request")
 		return
 	}
 
 	if body.Username != "admin" || body.Password != "secret" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		utils.RespondError(c, http.StatusUnauthorized, "Invalid username or password!")
 		return
 	}
+
 
 	token, err := jwtservice.CreateToken(
 		map[string]interface{}{"sub": body.Username},
-		time.Minute*time.Duration(jwtCfg.ExpiresIn),
 	)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})
+		utils.RespondError(c, http.StatusInternalServerError, "Failed to create token!")
 		return
 	}
 
-	c.JSON(http.StatusOK, TokenResponse{
+	utils.RespondOK(c, TokenResponse{
 		AccessToken: token,
 		TokenType:   "bearer",
 	})

@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
 	"neohub.asia/mod/databases/models"
+	"neohub.asia/mod/utils"
 )
 
 type CreateBookInput struct {
@@ -24,7 +26,7 @@ func GetBooks(c *gin.Context) {
 	var books []models.Book
 	db.Find(&books)
 
-	c.JSON(http.StatusOK, gin.H{"data": books})
+	utils.RespondOK(c, books)
 }
 
 // GET /book/:id
@@ -33,29 +35,29 @@ func GetBook(c *gin.Context) {
 	var book models.Book
 
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Book not found!"})
+		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": book})
+	utils.RespondOK(c, book)
 }
 
 // POST /book
 func CreateBook(c *gin.Context) {
 	var input CreateBookInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.RespondError(c, http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
 	book := models.Book{Title: input.Title, Author: input.Author}
 	db := c.MustGet("db").(*gorm.DB)
 	if err := db.Create(&book).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create book"})
+		utils.RespondError(c, http.StatusBadRequest, "Could not create book!")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": book})
+	utils.RespondCreated(c, book)
 }
 
 // PATCH /book/:id
@@ -64,13 +66,13 @@ func UpdateBook(c *gin.Context) {
 	var book models.Book
 
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Book not found!"})
+		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
 		return
 	}
 
 	var input UpdateBookInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.RespondError(c, http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
@@ -83,11 +85,11 @@ func UpdateBook(c *gin.Context) {
 	}
 
 	if err := db.Model(&book).Updates(updateData).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
+		utils.RespondError(c, http.StatusBadRequest, "Failed to update book!")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": book})
+	utils.RespondOK(c, book)
 }
 
 // DELETE /book/:id
@@ -96,14 +98,14 @@ func DeleteBook(c *gin.Context) {
 	var book models.Book
 
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Book not found!"})
+		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
 		return
 	}
 
 	if err := db.Delete(&book).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
+		utils.RespondError(c, http.StatusBadRequest, "Failed to delete book!")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	utils.RespondOK(c, book)
 }

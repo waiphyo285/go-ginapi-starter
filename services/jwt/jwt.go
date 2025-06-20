@@ -1,21 +1,24 @@
 package jwtservice
 
 import (
-	"time"
 	"errors"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"neohub.asia/mod/config"
 )
 
-func CreateToken(data map[string]interface{}, expiresDelta time.Duration) (string, error) {
+func CreateToken(data map[string]interface{}) (string, error) {
+
 	claims := jwt.MapClaims{}
 	jwtCfg := config.LoadJWTConfig()
 
 	for k, v := range data {
 		claims[k] = v
 	}
-	claims["exp"] = time.Now().Add(expiresDelta).Unix()
+	now := time.Now()
+	claims["iat"] = now.Unix() 
+	claims["exp"] = now.Add(jwtCfg.ExpiresIn).Unix() 
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(jwtCfg.Algorithm), claims)
 	return token.SignedString(jwtCfg.Secret)
@@ -29,6 +32,7 @@ func VerifyToken(tokenStr string) (jwt.MapClaims, error) {
 		}
 		return jwtCfg.Secret, nil
 	})
+
 
 	if err != nil {
 		return nil, errors.New("invalid token")
