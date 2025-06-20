@@ -20,9 +20,9 @@ type TokenResponse struct {
 
 func LoginHandler(c *gin.Context) {
 	var body LoginRequest
-	
+
 	if err := c.ShouldBindJSON(&body); err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Invalid request")
+		utils.RespondError(c, http.StatusUnauthorized, "Invalid request!")
 		return
 	}
 
@@ -30,7 +30,6 @@ func LoginHandler(c *gin.Context) {
 		utils.RespondError(c, http.StatusUnauthorized, "Invalid username or password!")
 		return
 	}
-
 
 	token, err := jwtservice.CreateToken(
 		map[string]interface{}{"sub": body.Username},
@@ -41,7 +40,7 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	utils.RespondOK(c, TokenResponse{
-		AccessToken: token,
 		TokenType:   "bearer",
+		AccessToken: token,
 	})
 }

@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 
 	"neohub.asia/mod/databases/models"
-	"neohub.asia/mod/utils"
 )
 
 type CreateBookInput struct {
@@ -25,39 +24,46 @@ func GetBooks(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var books []models.Book
 	db.Find(&books)
-
-	utils.RespondOK(c, books)
+	c.Set("response", books)
 }
 
 // GET /book/:id
 func GetBook(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var book models.Book
-
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Book not found!",
+		})
 		return
 	}
-
-	utils.RespondOK(c, book)
+	c.Set("response", book)
 }
 
 // POST /book
 func CreateBook(c *gin.Context) {
 	var input CreateBookInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		utils.RespondError(c, http.StatusUnprocessableEntity, err.Error())
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusUnprocessableEntity,
+			"data": err.Error(),
+		})
 		return
 	}
 
 	book := models.Book{Title: input.Title, Author: input.Author}
 	db := c.MustGet("db").(*gorm.DB)
 	if err := db.Create(&book).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Could not create book!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Could not create book!",
+		})
 		return
 	}
 
-	utils.RespondCreated(c, book)
+	c.Set("response", book)
+	c.Set("status", http.StatusCreated)
 }
 
 // PATCH /book/:id
@@ -66,13 +72,19 @@ func UpdateBook(c *gin.Context) {
 	var book models.Book
 
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Book not found!",
+		})
 		return
 	}
 
 	var input UpdateBookInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		utils.RespondError(c, http.StatusUnprocessableEntity, err.Error())
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusUnprocessableEntity,
+			"data": err.Error(),
+		})
 		return
 	}
 
@@ -85,11 +97,14 @@ func UpdateBook(c *gin.Context) {
 	}
 
 	if err := db.Model(&book).Updates(updateData).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Failed to update book!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Failed to update book!",
+		})
 		return
 	}
 
-	utils.RespondOK(c, book)
+	c.Set("response", book)
 }
 
 // DELETE /book/:id
@@ -98,14 +113,20 @@ func DeleteBook(c *gin.Context) {
 	var book models.Book
 
 	if err := db.Where("id = ?", c.Param("id")).First(&book).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Book not found!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Book not found!",
+		})
 		return
 	}
 
 	if err := db.Delete(&book).Error; err != nil {
-		utils.RespondError(c, http.StatusBadRequest, "Failed to delete book!")
+		c.Set("error", map[string]interface{}{
+			"code": http.StatusBadRequest,
+			"data": "Failed to delete book!",
+		})
 		return
 	}
 
-	utils.RespondOK(c, book)
+	c.Set("response", book)
 }

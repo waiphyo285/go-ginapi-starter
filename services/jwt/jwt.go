@@ -17,8 +17,8 @@ func CreateToken(data map[string]interface{}) (string, error) {
 		claims[k] = v
 	}
 	now := time.Now()
-	claims["iat"] = now.Unix() 
-	claims["exp"] = now.Add(jwtCfg.ExpiresIn).Unix() 
+	claims["iat"] = now.Unix()
+	claims["exp"] = now.Add(jwtCfg.ExpiresIn).Unix()
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod(jwtCfg.Algorithm), claims)
 	return token.SignedString(jwtCfg.Secret)
@@ -32,7 +32,6 @@ func VerifyToken(tokenStr string) (jwt.MapClaims, error) {
 		}
 		return jwtCfg.Secret, nil
 	})
-
 
 	if err != nil {
 		return nil, errors.New("invalid token")

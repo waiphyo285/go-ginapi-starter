@@ -2,10 +2,10 @@ package databases
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 	"neohub.asia/mod/databases/models"
 )
-
 
 func RegisterHooks(db *gorm.DB) {
 	db.Callback().Create().After("gorm:create").Register("audit_after_create", func(db *gorm.DB) {

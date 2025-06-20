@@ -12,23 +12,21 @@ type Response struct {
 	Error   interface{} `json:"error,omitempty"`
 }
 
-// Success response
+func Respond(c *gin.Context, status int, data interface{}) {
+	c.JSON(status, Response{
+		Success: true,
+		Data:    data,
+	})
+}
+
 func RespondOK(c *gin.Context, data interface{}) {
-	c.JSON(http.StatusOK, Response{
-		Success: true,
-		Data:    data,
-	})
+	Respond(c, http.StatusOK, data)
 }
 
-// Created response
 func RespondCreated(c *gin.Context, data interface{}) {
-	c.JSON(http.StatusCreated, Response{
-		Success: true,
-		Data:    data,
-	})
+	Respond(c, http.StatusCreated, data)
 }
 
-// Error response
 func RespondError(c *gin.Context, status int, err interface{}) {
 	c.JSON(status, Response{
 		Success: false,

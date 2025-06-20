@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"neohub.asia/mod/services/jwt"
+	jwtservice "neohub.asia/mod/services/jwt"
 )
 
 func JWTAuthMiddleware() gin.HandlerFunc {

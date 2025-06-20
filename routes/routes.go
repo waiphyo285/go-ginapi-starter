@@ -14,12 +14,13 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 	})
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	// Public route 
+	// Public route
 	r.POST("/auth/token", controllers.LoginHandler)
 
 	// Protected routes
 	api := r.Group("/api")
 	api.Use(middlewares.JWTAuthMiddleware())
+	api.Use(middlewares.ResponseFormatter())
 	{
 		api.GET("/book", controllers.GetBooks)
 		api.POST("/book", controllers.CreateBook)
