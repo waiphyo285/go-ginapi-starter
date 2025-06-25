@@ -9,24 +9,23 @@ import (
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
+	r.SetTrustedProxies([]string{"127.0.0.1"})
+
+	// Inject DB into context
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 	})
-	r.SetTrustedProxies([]string{"127.0.0.1"})
 
-	// Public route
+	// Public routes
 	r.POST("/auth/token", controllers.LoginHandler)
 
 	// Protected routes
 	api := r.Group("/api")
 	api.Use(middlewares.JWTAuthMiddleware())
 	api.Use(middlewares.ResponseFormatter())
-	{
-		api.GET("/book", controllers.GetBooks)
-		api.POST("/book", controllers.CreateBook)
-		api.GET("/book/:id", controllers.GetBook)
-		api.PATCH("/book/:id", controllers.UpdateBook)
-		api.DELETE("/book/:id", controllers.DeleteBook)
-	}
+
+	// Register route groups
+	RegisterBookRoutes(api, db)
+
 	return r
 }

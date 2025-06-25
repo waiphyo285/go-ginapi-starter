@@ -9,7 +9,6 @@ import (
 )
 
 func CreateToken(data map[string]interface{}) (string, error) {
-
 	claims := jwt.MapClaims{}
 	jwtCfg := config.LoadJWTConfig()
 

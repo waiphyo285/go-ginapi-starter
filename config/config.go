@@ -6,23 +6,19 @@ import (
 	"time"
 )
 
-// JWT-related configuration
 type JWTConfig struct {
 	Algorithm string
 	Secret    []byte
 	ExpiresIn time.Duration
 }
 
-// LoadJWTConfig loads JWT configuration from .env
 func LoadJWTConfig() *JWTConfig {
-	// Default values
 	cfg := &JWTConfig{
 		Algorithm: "HS256",
 		Secret:    []byte("super_secret_xxx"),
 		ExpiresIn: 30 * time.Minute,
 	}
 
-	// Override from environment variables
 	if algo := os.Getenv("JWT_ALGO"); algo != "" {
 		cfg.Algorithm = algo
 	}
