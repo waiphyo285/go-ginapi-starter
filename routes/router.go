@@ -1,13 +1,17 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
 	"neohub.asia/mod/controllers"
 	"neohub.asia/mod/middlewares"
 )
 
 func SetupRoutes(db *gorm.DB) *gin.Engine {
+
 	r := gin.Default()
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
@@ -15,6 +19,9 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 	})
+
+	// Add Rate Limit
+	r.Use(middlewares.NewRateLimiter(5, 10*time.Second).Middleware())
 
 	// Public routes
 	r.POST("/auth/token", controllers.LoginHandler)
