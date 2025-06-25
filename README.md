@@ -1,17 +1,24 @@
-## Gin Gonic Stater
+## Features
 
-This is a simple CRUD (Create, Read, Update, Delete) application using Gin in Go.
+- Modular Routers: Organized under /api, cleanly separated.
+- GORM: Includes models for Book and AuditLog.
+- CRUD APIs: Supports Create, Read, Update, and Delete for Book
+- Audit Log (Event): Automatically logs events after inserts using event listeners.
+- Middlewares: Easy to integrate logging, authentication, or performance profiling.
 
-### Prerequisites
+## Quick Start
 
-Go 1.21.1 or later
-MySQL or any other database supported by GORM
+Go 1.21.1 or later (If not already installed) in your machine.
 
-### Setup
+### 1. Clone the Repo
 
 ```
-git clone git@github.com:waiphyo285/go-ginapi-starter.git
+git clone <repo-url>
 cd go-ginapi-starter
+```
+### 2. Install pkg and Run app
+
+```
 go mod tidy
 go run main.go
 ```
