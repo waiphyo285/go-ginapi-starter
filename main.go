@@ -4,6 +4,8 @@ import (
 	"neohub.asia/mod/databases"
 	"neohub.asia/mod/databases/models"
 	"neohub.asia/mod/routes"
+
+	cronservice "neohub.asia/mod/services/cron"
 )
 
 func main() {
@@ -13,6 +15,9 @@ func main() {
 
 	// Register Hooks
 	databases.RegisterHooks(db)
+
+	// Start Runner Jobs
+	cronservice.CronRunner()
 
 	// Setup Routes
 	r := routes.SetupRoutes(db)
