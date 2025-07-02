@@ -16,9 +16,16 @@ Go 1.21.1 or later (If not already installed) in your machine.
 git clone <repo-url>
 cd go-ginapi-starter
 ```
+
 ### 2. Install pkg and Run app
 
 ```
 go mod tidy
 go run main.go
+```
+
+### 3. Testing API
+
+```
+go test ./tests/...
 ```

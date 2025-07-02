@@ -2,13 +2,12 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"neohub.asia/mod/controllers"
-	"neohub.asia/mod/databases/models"
+	"neohub.asia/mod/di"
 )
 
-func RegisterBookRoutes(rg *gin.RouterGroup, db *gorm.DB) {
-	bookController := controllers.NewBaseController(db, models.Book{})
+func RegisterBookRoutes(rg *gin.RouterGroup, c *di.Container) {
+	bookController := c.BookController
+
 	book := rg.Group("/book")
 	{
 		book.GET("/", bookController.List)
